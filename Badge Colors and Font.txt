@@ -1,0 +1,8 @@
+#3dbaea - D Class
+#f6bf31 - C Class
+#ff6533 - B Class
+#fc355a - A Class
+#bd5ee4 - S1 Class
+#1567d6 - S2 Class
+
+Molde Condensed Black
