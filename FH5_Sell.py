@@ -68,6 +68,14 @@ try:
     Create_Auction = os.path.join(pic_path, "Create_Auction.png") # Auc_Car_hovered -> Create Auction
     Starting_Auction = os.path.join(pic_path, "Starting_Auction.png") # Confirm -> Starting Auction
     Live_Auction = os.path.join(pic_path, "Live_Auction.png") # Starting Auction -> Live Auction -> [Message Buyer Client]
+    Initial_Price_Hovered = os.path.join(pic_path, "Initial_Price_Hovered.png") # [left arrow] until Minimum Buy
+    Initial_Price_Not = os.path.join(pic_path, "Initial_Price_Not.png")
+    Buyout_Price_Not = os.path.join(pic_path, "Buyout_Price_Not.png") # [enter] -> Click -> set Minimum price
+    Buyout_Price_Hovered = os.path.join(pic_path, "Buyout_Price_Hovered.png")
+    Auction_Car_Not = os.path.join(pic_path, "Auction_Car_Not.png") # [enter] -> Initial Price
+    Auction_Car_Hovered = os.path.join(pic_path, "Auction_Car_Hovered.png")
+    Minimum_Buy_Not = os.path.join(pic_path, "Minimum_Buy_Not.png") 
+    Minimum_Buy_Hovered = os.path.join(pic_path, "Minimum_Buy_Hovered.png") # Confirm -> Starting auction
     
     Net_Check = os.path.join(pic_path, "check.png")
     Net_Not = os.path.join(pic_path, "x.png")
@@ -161,17 +169,19 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, line)
             self.list_pos += 1
 
-        self.is_verifying = False
+        self.is_verified = False
+        self.ready_to_start = False
         self.update()
-        self.running_auc_checks = False
+        # self.running_auc_checks = False
         
-        self.auction_checks = 0
+        # self.auction_checks = 0
 
         # Only sends connection message upon initial connection
         self.net_start = True
         self.net_message = ""
         self.client_socket = socket()
         
+        self.server_connection = False # Is this client connected to the comm server?
         self.computers_connected = False # Variable to keep track of whether or not the computers are linked
         
     # ? """Puts the two whole widgets in the correct position depending on compound."""
@@ -267,7 +277,351 @@ class App(ttk.Frame):
     # ! ====================================
     # ! ====================================        
         
+    def verifying(self):
+        if window_exist:
+            forza.activate() # Bring program into focus
+            time.sleep(.05)
+            forza.maximize() # Make program full screen
+            time.sleep(.05)
+            # ! Checks for initial auction car button to begin auctioning vehicle
+            # ! ===============================================
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Checking for Auction Car button..."
+            self.listbox.insert(self.list_pos, log_now)  
+            self.listbox.yview("end") 
+            self.update()
+            self.start_time = time.time()
+            while True:
+                self.auction_car_not_looking = pyautogui.locateOnScreen(Auction_Car_Not, confidence=.8)
+                self.auction_car_hovered_looking = pyautogui.locateOnScreen(Auction_Car_Hovered, confidence=.8)
+                if self.auction_car_not_looking:
+                    pyautogui.click(self.auction_car_not_looking)
+                    pyautogui.press('enter')
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Auction Car button found!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                elif self.auction_car_hovered_looking:
+                    pyautogui.press('enter')
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Auction Car button found!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                else:
+                    self.current_time = time.time()
+                    self.lapsed = self.current_time - self.start_time
+                    self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                    
+                    if self.temp == 3: # 3 second wait time
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - No Auction Car button!"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        return
+                self.update()
+            # ! ===============================================
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Checking for Auction Car button..."
+            self.listbox.insert(self.list_pos, log_now)  
+            self.listbox.yview("end") 
+            self.update()
+            self.start_time = time.time()
+            while True:
+                self.create_auction_looking = pyautogui.locateOnScreen(Create_Auction, confidence=.8)
+                if self.create_auction_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On creating auction screen!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                else:
+                    self.current_time = time.time()
+                    self.lapsed = self.current_time - self.start_time
+                    self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                    
+                    if self.temp == 3: # 3 second wait time
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Create auction screen not found!"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        return
+                self.update()
+            
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Auction access verified! >--"
+            self.listbox.insert(self.list_pos, log_now)
+            self.listbox.yview("end")
+            self.update()   
+            self.readying.config(state="enabled")   
+            self.is_verified = True
+        else:
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Game isn't open, can't verify!"
+            self.listbox.insert(self.list_pos, log_now)
+            self.listbox.yview("end")
+            self.start_toggled == False
+            self.start_button.configure(text="Start", style="Toggle.TButton")
+
+    def getting_ready(self):
+        if window_exist:
+            forza.activate() # Bring program into focus
+            time.sleep(.05)
+            forza.maximize() # Make program full screen
+            time.sleep(.05)
+            # ! Checks for car pricing option and sees if the price is at its lowest or not
+            # ! ===============================================
+            self.not_at_min = False
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+            self.listbox.insert(self.list_pos, log_now)  
+            self.listbox.yview("end") 
+            self.update()
+            self.start_time = time.time()
+            while True:
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.8)
+                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.8)
+                self.min_buy_not_looking = pyautogui.locateOnScreen(Minimum_Buy_Not, confidence=.8)
+                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.8)
+                
+                if self.initial_price_hovered_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price needs to be lowered!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.not_at_min = True
+                    self.update()
+                    break
+                elif self.initial_price_not_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price needs to be lowered!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.not_at_min = True # Button needs to be hovered before price can be adjusted
+                    self.update()
+                    break
+                elif self.min_buy_not_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price already lowered!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.not_at_min = False
+                    self.update()
+                    break
+                elif self.min_buy_hovered_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price already lowered!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.not_at_min = False
+                    self.update()
+                    break
+                else:
+                    self.current_time = time.time()
+                    self.lapsed = self.current_time - self.start_time
+                    self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                    
+                    if self.temp == 3: # 3 second wait time
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Can't find car pricing needing adjustment!"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        return
+                self.update()
+                
+            self.ready_to_adjust = False # Flag for whether or not price can be lowered
+            # ! Checks for buyout price selection so that price can be adjusted accordingly
+            # ! ===============================================
+            if self.not_at_min:
+                # ! ===============================================
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+                self.listbox.insert(self.list_pos, log_now)  
+                self.listbox.yview("end") 
+                self.update()
+                self.start_time = time.time()
+                while True:
+                    self.buyout_price_hovered_looking = pyautogui.locateOnScreen(Buyout_Price_Hovered, confidence=.8)
+                    self.buyout_price_not_looking = pyautogui.locateOnScreen(Buyout_Price_Not, confidence=.8)
+                    if self.buyout_price_hovered_looking:
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price will now be adjusted!"
+                        self.listbox.insert(self.list_pos, log_now)  
+                        self.listbox.yview("end") 
+                        self.update()
+                        self.ready_to_adjust = True
+                        break
+                    elif self.buyout_price_not_looking:
+                        pyautogui.click(self.buyout_price_not_looking)
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price will now be adjusted!"
+                        self.listbox.insert(self.list_pos, log_now)  
+                        self.listbox.yview("end") 
+                        self.update()
+                        self.ready_to_adjust = True
+                        break
+                    else:
+                        self.current_time = time.time()
+                        self.lapsed = self.current_time - self.start_time
+                        self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
                         
+                        if self.temp == 3: # 3 second wait time
+                            self.list_pos += 1
+                            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Unable find buyout price for adjusting!"
+                            self.listbox.insert(self.list_pos, log_now)
+                            self.listbox.yview("end")
+                            return
+                    self.update()
+                # ! ===============================================
+            else:
+                # ! Hovers over confirm button to make car auction go live for purchase
+                # ! ===============================================
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+                self.listbox.insert(self.list_pos, log_now)  
+                self.listbox.yview("end") 
+                self.update()
+                self.start_time = time.time()
+                while True:
+                    self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.8)
+                    self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.8)
+                    
+                    if self.confirm_hovered_looking:
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car is ready to go to live for sale!"
+                        self.listbox.insert(self.list_pos, log_now)  
+                        self.listbox.yview("end") 
+                        self.update()
+                        break
+                    elif self.confirm_not_looking:
+                        pyautogui.click(self.confirm_not_looking)
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car is ready to go to live for sale!"
+                        self.listbox.insert(self.list_pos, log_now)  
+                        self.listbox.yview("end") 
+                        self.update()
+                        break
+                    else:
+                        self.current_time = time.time()
+                        self.lapsed = self.current_time - self.start_time
+                        self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                        
+                        if self.temp == 3: # 3 second wait time
+                            self.list_pos += 1
+                            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Unable find buyout price for adjusting!"
+                            self.listbox.insert(self.list_pos, log_now)
+                            self.listbox.yview("end")
+                            return
+                    self.update()
+                self.ready_to_start = True
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Auction ready to go live! >--"
+                self.listbox.insert(self.list_pos, log_now)
+                self.listbox.yview("end")
+                self.update()
+                return
+                # ! ===============================================
+            # ! Adjusts car pricing to its minimum
+            # ! ===============================================
+            self.not_at_min = False
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+            self.listbox.insert(self.list_pos, log_now)  
+            self.listbox.yview("end") 
+            self.update()
+            self.start_time = time.time()
+            while True:
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.8)
+                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.8)
+                if self.initial_price_hovered_looking:
+                    pyautogui.press('left arrow')
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Price lowered..."
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                elif self.min_buy_hovered_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Price lowered all the way!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                else:
+                    self.current_time = time.time()
+                    self.lapsed = self.current_time - self.start_time
+                    self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                    
+                    if self.temp == 3: # 3 second wait time
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Unable to lower buyout price!"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        return
+                self.update()
+            # ! ===============================================
+            # ! Hovers over confirm button to make car auction go live for purchase
+            # ! ===============================================
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+            self.listbox.insert(self.list_pos, log_now)  
+            self.listbox.yview("end") 
+            self.update()
+            self.start_time = time.time()
+            while True:
+                self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.8)
+                self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.8)
+                
+                if self.confirm_hovered_looking:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car is ready to go to live for sale!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                elif self.confirm_not_looking:
+                    pyautogui.click(self.confirm_not_looking)
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car is ready to go to live for sale!"
+                    self.listbox.insert(self.list_pos, log_now)  
+                    self.listbox.yview("end") 
+                    self.update()
+                    break
+                else:
+                    self.current_time = time.time()
+                    self.lapsed = self.current_time - self.start_time
+                    self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
+                    
+                    if self.temp == 3: # 3 second wait time
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Unable find buyout price for adjusting!"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        return
+                self.update()
+            # ! ===============================================
+            self.ready_to_start = True
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Auction ready to go live! >--"
+            self.listbox.insert(self.list_pos, log_now)
+            self.listbox.yview("end")
+            self.update()
+            return
+        else:
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Game isn't open, can't verify!"
+            self.listbox.insert(self.list_pos, log_now)
+            self.listbox.yview("end")
+            self.start_toggled == False
+            self.start_button.configure(text="Start", style="Toggle.TButton")
+        
+    
+    
+                     
 # ! Program startup
 # ! --------------------------------------
 if __name__ == "__main__":
