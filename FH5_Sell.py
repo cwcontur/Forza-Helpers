@@ -140,6 +140,20 @@ class App(ttk.Frame):
         self.separator = ttk.Separator(self.main_frame)
         self.separator.grid(row=4, column=0, padx=10, pady=5, sticky="ew")
         
+        # Debugging stuff
+        # ================== 
+        self.debug_frame = ttk.Frame(self.main_frame)
+        self.debug_frame.grid(row=5, column=0, padx=1, pady=10, sticky="news")
+        
+        self.debug_button = ttk.Button(self.debug_frame, text="Debug", style="Toggle.TButton", command=self.debug_mode)
+        self.debug_button.grid(row=0, column=0, columnspan=2, padx=6, pady=(0,10), sticky="ew")
+        
+        self.game_check = ttk.Button(self.debug_frame, text="Game", style="Toggle.TButton", command=self.check_game)
+        self.game_check.grid(row=1, column=0, padx=(6,12), pady=(0,10), sticky="ew")
+        
+        self.reset_checks = ttk.Button(self.debug_frame, text="Reset", style="Toggle.TButton", command=self.reset_stuff)
+        self.reset_checks.grid(row=1, column=1, padx=6, pady=(0,10), sticky="ew")
+        
         # Toggle theme from light to dark
         # ==================           
         self.theme_toggle = ttk.Checkbutton(self.main_frame, text="Dark Theme", style="Switch.TCheckbutton", command=sv_ttk.toggle_theme)
@@ -201,7 +215,41 @@ class App(ttk.Frame):
     # ? ====================================    
     def config_listbox(self, *args, **kwargs):
         self.listbox.configure(*args, **kwargs)   
-    # ? ====================================          
+    # ? ====================================     
+    # * Debugging stuff
+    # * =====================================
+    def reset_stuff(self):
+        self.readying.config(state="disabled")
+        self.verify_button.config(state="disabled")
+        self.ready_to_start = False
+    # * =====================================       
+    def debug_mode(self):
+        self.readying.config(state="enabled")
+        self.verify_button.config(state="enabled")
+    # * =====================================   
+    def check_game(self):
+        global forza
+        window_exist = False # Sanity check to make sure Discord window is open and available to be focused
+        # ? Checks for open windows applications to see if game is open and gets name of window
+        # ? =================================================================
+        for x in pyautogui.getAllWindows():
+            if 'Forza' in x.title:
+                forza = gw.getWindowsWithTitle(x.title)[0]
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found!")
+                self.list_pos += 1
+                self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                self.listbox.yview("end")
+                window_exist = True
+                break
+            else:
+                window_exist = False
+
+        if not window_exist:
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Error: Game window not found!"
+            self.list_pos += 1
+            self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+            self.listbox.yview("end")
+    # * =====================================       
     # ! ====================================
     # ! Establishes server connection for communications
     # ! ====================================        
@@ -402,11 +450,9 @@ class App(ttk.Frame):
             self.listbox.yview("end") 
             self.update()
             self.start_time = time.time()
-            while True:
-                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.95)
-                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.95)
-                self.min_buy_not_looking = pyautogui.locateOnScreen(Minimum_Buy_Not, confidence=.95)
-                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.95)
+            while True: 
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.9)
+                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.9)
                 
                 if self.initial_price_hovered_looking:
                     self.list_pos += 1
@@ -424,33 +470,17 @@ class App(ttk.Frame):
                     self.not_at_min = True # Button needs to be hovered before price can be adjusted
                     self.update()
                     break
-                elif self.min_buy_not_looking:
-                    self.list_pos += 1
-                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price already lowered!"
-                    self.listbox.insert(self.list_pos, log_now)  
-                    self.listbox.yview("end") 
-                    self.not_at_min = False
-                    self.update()
-                    break
-                elif self.min_buy_hovered_looking:
-                    self.list_pos += 1
-                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price already lowered!"
-                    self.listbox.insert(self.list_pos, log_now)  
-                    self.listbox.yview("end") 
-                    self.not_at_min = False
-                    self.update()
-                    break
                 else:
                     self.current_time = time.time()
                     self.lapsed = self.current_time - self.start_time
                     self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
                     
-                    if self.temp == 3: # 3 second wait time
+                    if self.temp == 2: # 3 second wait time
                         self.list_pos += 1
-                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Can't find car pricing needing adjustment!"
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car is already at minimum price!"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
-                        return
+                        break
                 self.update()
                 
             self.ready_to_adjust = False # Flag for whether or not price can be lowered
@@ -543,7 +573,7 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()
-                self.net_message = log_now
+                self.net_message = " - --< Auction ready to go live! >--"
                 self.send()
                 return
                 # ! ===============================================
@@ -551,45 +581,37 @@ class App(ttk.Frame):
             # ! ===============================================
             self.not_at_min = False
             self.list_pos += 1
-            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Trying to lower price to minimum..."
             self.listbox.insert(self.list_pos, log_now)  
             self.listbox.yview("end") 
             self.update()
             self.start_time = time.time()
             while True:
                 self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.8)
-                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.8)
                 if self.initial_price_hovered_looking:
-                    pyautogui.press('left arrow')
+                    pyautogui.press('left')
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Price lowered..."
                     self.listbox.insert(self.list_pos, log_now)  
                     self.listbox.yview("end") 
                     self.update()
-                elif self.min_buy_hovered_looking:
-                    self.list_pos += 1
-                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Price lowered all the way!"
-                    self.listbox.insert(self.list_pos, log_now)  
-                    self.listbox.yview("end") 
-                    self.update()
-                    break
                 else:
                     self.current_time = time.time()
                     self.lapsed = self.current_time - self.start_time
                     self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
                     
-                    if self.temp == 3: # 3 second wait time
+                    if self.temp == 2: # 3 second wait time
                         self.list_pos += 1
-                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Unable to lower buyout price!"
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Price lowered all of the way!"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
-                        return
+                        break
                 self.update()
             # ! ===============================================
             # ! Hovers over confirm button to make car auction go live for purchase
             # ! ===============================================
             self.list_pos += 1
-            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seeing if car price is at its minimum..."
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Looking for confirm button..."
             self.listbox.insert(self.list_pos, log_now)  
             self.listbox.yview("end") 
             self.update()
@@ -632,7 +654,7 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
             self.update()
-            self.net_message = log_now
+            self.net_message = " - --< Auction ready to go live! >--"
             self.send()
             if self.ready_to_start and self.computers_connected and self.server_connection:
                 self.start_button.config(state="enabled")
@@ -721,7 +743,7 @@ if __name__ == "__main__":
 
     app = tk.Tk()
     app.title("FH5 Seller")
-    app.geometry(f"{600}x{325}")
+    app.geometry(f"{600}x{385}")
     app.iconbitmap("seller.ico")
 
     sv_ttk.set_theme("light")

@@ -40,6 +40,7 @@ global log
 log = []
 
 global window_exist
+global forza
 forza = "" # Initializer for Discord window name
 window_exist = False # Sanity check to make sure Discord window is open and available to be focused
 # ? Checks for open windows applications to see if game is open and gets name of window
@@ -47,7 +48,7 @@ window_exist = False # Sanity check to make sure Discord window is open and avai
 for x in pyautogui.getAllWindows():
     if 'Forza' in x.title:
         forza = gw.getWindowsWithTitle(x.title)[0]
-        log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found: ")
+        log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found!")
         log.append(log_now)
         window_exist = True
         break
@@ -103,14 +104,6 @@ class App(ttk.Frame):
         self.main_frame = ttk.Frame(self, style="Card.TFrame")
         self.main_frame.grid(row=0, rowspan=2, column=0, padx=10, pady=10, sticky="news")
         self.main_frame.rowconfigure(6, weight=1)
-        
-        self.start_button = ttk.Button(self.main_frame, text="Start", style="Accent.TButton", state="disabled", command=self.start)
-        self.start_button.grid(row=0, column=0, ipadx=30, ipady=5, padx=7, pady=10, sticky="ew")  
-        self.start_toggled = False    
-         # Separator line
-        # ==================                  
-        self.separator_butt = ttk.Separator(self.main_frame)
-        self.separator_butt.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
                
         self.verify_button = ttk.Button(self.main_frame, text="Setup", style="Toggle.TButton", command=self.verify)
         self.verify_button.grid(row=2, column=0, ipadx=30, ipady=5, padx=7, pady=10, sticky="ew")   
@@ -144,6 +137,18 @@ class App(ttk.Frame):
         # ==================                  
         self.separator = ttk.Separator(self.main_frame)
         self.separator.grid(row=4, column=0, padx=10, pady=5, sticky="ew")
+        
+        self.debug_frame = ttk.Frame(self.main_frame)
+        self.debug_frame.grid(row=5, column=0, padx=1, pady=10, sticky="news")
+        
+        self.debug_button = ttk.Button(self.debug_frame, text="Debug", style="Toggle.TButton", command=self.debug_mode)
+        self.debug_button.grid(row=0, column=0, columnspan=2, padx=6, pady=(0,10), sticky="ew")
+        
+        self.game_check = ttk.Button(self.debug_frame, text="Game", style="Toggle.TButton", command=self.check_game)
+        self.game_check.grid(row=1, column=0, padx=(6,12), pady=(0,10), sticky="ew")
+        
+        self.reset_checks = ttk.Button(self.debug_frame, text="Reset", style="Toggle.TButton", command=self.reset_stuff)
+        self.reset_checks.grid(row=1, column=1, padx=6, pady=(0,10), sticky="ew")
         
         # Toggle theme from light to dark
         # ==================           
@@ -201,6 +206,38 @@ class App(ttk.Frame):
     def config_listbox(self, *args, **kwargs):
         self.listbox.configure(*args, **kwargs)   
     # ? ====================================  
+    # * Debugging stuff
+    # * =====================================
+    def reset_stuff(self):
+        self.readying.config(state="disabled")
+        self.ready_to_start = False
+    # * =====================================       
+    def debug_mode(self):
+        self.readying.config(state="enabled")
+    # * =====================================   
+    def check_game(self):
+        global forza
+        window_exist = False # Sanity check to make sure Discord window is open and available to be focused
+        # ? Checks for open windows applications to see if game is open and gets name of window
+        # ? =================================================================
+        for x in pyautogui.getAllWindows():
+            if 'Forza' in x.title:
+                forza = gw.getWindowsWithTitle(x.title)[0]
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found!")
+                self.list_pos += 1
+                self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                self.listbox.yview("end")
+                window_exist = True
+                break
+            else:
+                window_exist = False
+
+        if not window_exist:
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Error: Game window not found!"
+            self.list_pos += 1
+            self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+            self.listbox.yview("end")
+    # * =====================================        
     # ! ====================================  
     # ! Establishes server connection for communications
     # ! ====================================        
@@ -336,8 +373,6 @@ class App(ttk.Frame):
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Auction button check took too long!"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
-                        self.start_toggled == False
-                        self.start_button.configure(text="Start", style="Toggle.TButton")
                         return
                 self.update()
                 
@@ -526,8 +561,6 @@ class App(ttk.Frame):
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Couldn't find search screen!"
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
-                self.start_toggled == False
-                self.start_button.configure(text="Start", style="Toggle.TButton")
                 # ! ==============================================================================  
             self.list_pos += 1
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Initial auction setup done! >--"
@@ -539,20 +572,11 @@ class App(ttk.Frame):
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Game isn't open, can't verify!"
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
-            self.start_toggled == False
-            self.start_button.configure(text="Start", style="Toggle.TButton")
             
 
     # ? =======================================================================    
     # ? =======================================================================
-    def start(self):
-        if self.start_toggled == False:
-            self.start_toggled = True
-            self.start_button.configure(text="Stop", style="Accent.TButton")
-        else:
-            self.start_toggled == False
-            self.start_button.configure(text="Start", style="Toggle.TButton")
-        
+    def start(self):    
         self.readying.config(state="disabled")
         self.main_function()
     
@@ -591,7 +615,6 @@ class App(ttk.Frame):
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Advanced search took too long to load!"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
-                        self.start_toggled == False
                         self.correct_starting_point = False
                         break
                 self.update()
@@ -684,9 +707,7 @@ class App(ttk.Frame):
                         if self.temp == 5:
                             self.list_pos += 1
                             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Advanced search took too long to load!"
-                            self.listbox.insert(self.list_pos, log_now)
-                            self.start_toggled == False
-                            self.start_button.configure(text="Start", style="Toggle.TButton")  
+                            self.listbox.insert(self.list_pos, log_now) 
                             self.listbox.yview("end")
                             return  
                     self.update()
@@ -718,7 +739,7 @@ class App(ttk.Frame):
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Ready to access auctions! >--"
             self.listbox.insert(self.list_pos, log_now)
             self.ready_to_start = True
-            self.net_message = "seller_access"
+            self.net_message = " - seller_access"
             self.send()
             self.listbox.yview("end")
             self.update()
@@ -760,8 +781,6 @@ class App(ttk.Frame):
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Checked for auctions too many times!"
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
-                self.start_toggled == False
-                self.start_button.configure(text="Start", style="Toggle.TButton")  
                 return   
             self.auction_checks += 1   
             pyautogui.press('x')
@@ -793,8 +812,6 @@ class App(ttk.Frame):
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Advanced search took too long to load!"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
-                        self.start_toggled == False
-                        self.start_button.configure(text="Start", style="Toggle.TButton")  
                         return  
                 self.update()
             # ! ===================================             
@@ -803,8 +820,6 @@ class App(ttk.Frame):
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Game isn't open, can't verify!"
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
-            self.start_toggled == False
-            self.start_button.configure(text="Start", style="Toggle.TButton")   
     # ? =======================================================================
     # ? =======================================================================    
     def look_for_auction(self):
@@ -852,8 +867,6 @@ class App(ttk.Frame):
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
                     pyautogui.press('esc')
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     self.update()
                     self.running_auc_checks = True
                     self.get_ready()
@@ -900,8 +913,6 @@ class App(ttk.Frame):
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Accessing auction took too long!"
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     return  
         # ! ===================================
         # ! ===================================
@@ -941,8 +952,6 @@ class App(ttk.Frame):
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Purchase attempt took too long!"
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     return     
         # ! ===================================
         # ! ===================================
@@ -972,8 +981,6 @@ class App(ttk.Frame):
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Buyout taking took too long!"
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     return 
         # ! ===================================
         # ! ===================================
@@ -1013,8 +1020,6 @@ class App(ttk.Frame):
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Collecting car took too long!"
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     return 
         # ! ===================================
         # ! ===================================
@@ -1042,20 +1047,16 @@ class App(ttk.Frame):
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Claiming car is taking forever!"
                     self.listbox.insert(self.list_pos, log_now)
                     self.listbox.yview("end")
-                    self.start_toggled == False
-                    self.start_button.configure(text="Start", style="Toggle.TButton")
                     return                 
         # ! ===================================
     # ? =======================================================================           
 # ! Program startup
 # ! --------------------------------------
 if __name__ == "__main__":
-    
-    
-    
+
     app = tk.Tk()
     app.title("FH5 Buyer")
-    app.geometry(f"{600}x{325}")
+    app.geometry(f"{600}x{375}")
     app.iconbitmap("cookie.ico")
 
     sv_ttk.set_theme("light")
