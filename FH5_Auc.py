@@ -246,15 +246,11 @@ class App(ttk.Frame):
                 log_now = msg
                 self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
                 self.listbox.yview("end")
-                if "Seller-Computer" in log_now:
+                if ("Seller-Computer" in log_now) and (not self.computers_connected):
                     self.computers_connected = True
                     if self.server_connection:
                         self.net_message = " - Buyer-Computer already connected!"
                         msg = self.net_message
-                        self.list_pos += 1
-                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
-                        self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
-                        self.listbox.yview("end")
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
                 
                 if "start_buying" in log_now:

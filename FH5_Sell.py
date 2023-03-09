@@ -202,12 +202,6 @@ class App(ttk.Frame):
     def config_listbox(self, *args, **kwargs):
         self.listbox.configure(*args, **kwargs)   
     # ? ====================================          
-    # ! ====================================  
-    # ! Networking stuff
-    # ! ====================================
-    def network_testing(self):
-        self.net_message = " --< Seller-Computer ready to sell! >--"
-        self.send()
     # ! ====================================
     # ! Establishes server connection for communications
     # ! ====================================        
@@ -247,15 +241,11 @@ class App(ttk.Frame):
                 log_now = msg
                 self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
                 self.listbox.yview("end")
-                if "Buyer-Computer" in log_now:
+                if ("Buyer-Computer" in log_now) and (not self.computers_connected):
                     self.computers_connected = True
                     if self.server_connection:
                         self.net_message = " - Seller-Computer already connected!"
                         msg = self.net_message
-                        self.list_pos += 1
-                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
-                        self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
-                        self.listbox.yview("end")
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
                 if "seller_access" in log_now:
                     self.verify_button.config(state="enabled")
@@ -288,6 +278,13 @@ class App(ttk.Frame):
             if msg == "{quit}":
                 self.client_socket.close()
     # ! ==================================== 
+    # ! ====================================  
+    # ! Networking stuff
+    # ! ====================================
+    def network_testing(self):
+        self.net_message = " --< Seller-Computer ready to sell! >--"
+        print("idot")
+        self.send()
     # ! Closes socket connection as needed
     # ! ==================================== 
     def on_closing(self, event=None):
