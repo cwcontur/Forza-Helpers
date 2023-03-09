@@ -1,0 +1,31 @@
+<tr>
+<td style="text-align: left; padding-left: 2px"><div style="grid-template-rows: 1fr; grid-template-columns: 2fr 1fr; width: 100%">
+<div style="line-height: 18px; padding-bottom: 1px"><a href="/wiki/Acura_Integra_Type-R" title="Acura Integra Type-R">Acura Integra Type-R</a> 2001</div>
+<div style="font-size: smaller; line-height: 14px">Autoshow</div>
+</div>
+</td>
+<td data-sort-value="01">
+</td>
+<td data-sort-value="1">
+</td>
+<td data-sort-value="2001">
+</td>
+<td data-sort-value="United States">
+</td>
+<td data-sort-value="25,000" style="text-align: right; padding-right: 1px"><div style="line-height: 18px; padding-bottom: 1px; font-size: 90%">25,000 CR</div>
+<div style="font-size: x-small; line-height: 14px"><span style="background-color: #7acb49; padding: 1px 4px 0 4px; color: #fff; font-weight: bold; font-family: 'Share'">COMMON</span> <a href="https://static.wikia.nocookie.net/forzamotorsport/images/c/cd/ForzaCountry_USAFlag.png/revision/latest?cb=20220201214212" class="image" title="United States"><img alt="United States" src="https://static.wikia.nocookie.net/forzamotorsport/images/c/cd/ForzaCountry_USAFlag.png/revision/latest/scale-to-width-down/20?cb=20220201214212" decoding="async" loading="lazy" width="20" height="13" style="vertical-align: sub" data-image-name="ForzaCountry USAFlag.png" data-image-key="ForzaCountry_USAFlag.png"></a></div>
+</td>
+<td style="text-align: center; font-size: 90%">5.6
+</td>
+<td style="text-align: center; font-size: 90%">5.1
+</td>
+<td style="text-align: center; font-size: 90%">3.9
+</td>
+<td style="text-align: center; font-size: 90%">3.1
+</td>
+<td style="text-align: center; font-size: 90%">3.4
+</td>
+<td style="text-align: center; font-size: 90%">5.1
+</td>
+<td data-sort-value="596" style="text-align: center"><span style="background-color: #f6bf31; border: 1px solid #f6bf31; padding: 0 5px 0 4px; color: #fff; font-weight: bold; font-family: 'Share'">C</span><span style="background-color: #fff; border: 1px solid #f6bf31; padding: 0 1px 0 1px; color: #3f2341; font-weight: bold; font-family: 'Share'">596</span>
+</td></tr>
