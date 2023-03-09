@@ -185,7 +185,9 @@ class App(ttk.Frame):
         self.net_message = ""
         self.client_socket = socket()
         
-        self.computers_connected = False
+        self.ready_to_start = False # Flag to see if verify and ready buttons have been successful 
+        self.server_connection = False # Is this client connected to the comm server?
+        self.computers_connected = False # Variable to keep track of whether or not the computers are linked
         
     # ? """Puts the two whole widgets in the correct position depending on compound."""
     # ? ====================================            
@@ -246,6 +248,14 @@ class App(ttk.Frame):
                 self.listbox.yview("end")
                 if "Seller-Computer" in log_now:
                     self.computers_connected = True
+                    if self.server_connection:
+                        self.net_message = " - Buyer-Computer already connected!"
+                        msg = self.net_message
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
+                        self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                        self.listbox.yview("end")
+                        self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
             except OSError:  # Possibly client has left the chat.
                 break
     # ! ==================================== 
@@ -256,12 +266,13 @@ class App(ttk.Frame):
         if self.net_start:
             self.net_message = " - [This is a placeholder message.]"
             self.net_start = False
-            msg = " Buyer-Computer is connected to server!"
+            msg = " - Buyer-Computer is connected to server!"
             self.list_pos += 1
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
             self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
             self.listbox.yview("end")
             self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
+            self.server_connection = True
         else:
             msg = self.net_message # Gets input from this client to send to server
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
@@ -677,26 +688,25 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()
-                self.start_button.config(state="enabled")
+                # self.start_button.config(state="enabled")
                 return
 
             self.list_pos += 1
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Ready to access auctions! >--"
             self.listbox.insert(self.list_pos, log_now)
-
+            self.ready_to_start = True
             self.listbox.yview("end")
             self.update()
             
-            if self.computers_connected:
-                self.start_button.config(state="enabled")
+            if self.ready_to_start and self.computers_connected and self.server_connection:
                 self.list_pos += 1
-                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Both computers connected and ready! >--"
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Both systems are ready for auction! |>>"
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()   
             else:
                 self.list_pos += 1
-                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Networking not established between computers! >--"
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< Something is not ready for auction to start >>>"
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()                

@@ -47,7 +47,7 @@ window_exist = False # Sanity check to make sure Discord window is open and avai
 for x in pyautogui.getAllWindows():
     if 'Forza' in x.title:
         forza = gw.getWindowsWithTitle(x.title)[0]
-        log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found: ")
+        log_now = str(datetime.utcnow().strftime('%H:%M:%S') + " - Game window found!")
         log.append(log_now)
         window_exist = True
         break 
@@ -65,6 +65,7 @@ try:
     Confirm_Hovered = os.path.join(pic_path, "Confirm_Hovered.png") # Create Auction -> Confirm
     Confirm_Not = os.path.join(pic_path, "Confirm_Not.png") # Create Auction -> Confirm
     Auc_Car_Hovered = os.path.join(pic_path, "Auc_Car_Hovered.png") # Starting screen for program
+    Auc_Car_Not = os.path.join(pic_path, "Auc_Car_Not.png") # Starting screen for program
     Create_Auction = os.path.join(pic_path, "Create_Auction.png") # Auc_Car_hovered -> Create Auction
     Starting_Auction = os.path.join(pic_path, "Starting_Auction.png") # Confirm -> Starting Auction
     Live_Auction = os.path.join(pic_path, "Live_Auction.png") # Starting Auction -> Live Auction -> [Message Buyer Client]
@@ -97,7 +98,7 @@ class App(ttk.Frame):
         self.main_frame.grid(row=0, rowspan=2, column=1, padx=10, pady=10, sticky="news")
         self.main_frame.rowconfigure(6, weight=1)
         
-        self.start_button = ttk.Button(self.main_frame, text="Start Auction", style="Accent.TButton", state="disabled")
+        self.start_button = ttk.Button(self.main_frame, text="Start Auction", style="Accent.TButton", state="disabled", command=self.start_system)
         self.start_button.grid(row=0, column=0, ipady=5, padx=7, pady=10, sticky="ew")  
         self.start_toggled = False  
          
@@ -106,10 +107,10 @@ class App(ttk.Frame):
         self.separator_butt = ttk.Separator(self.main_frame)
         self.separator_butt.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
         
-        self.verify_button = ttk.Button(self.main_frame, text="Verify", style="Toggle.TButton")
+        self.verify_button = ttk.Button(self.main_frame, text="Verify", style="Toggle.TButton", state="disabled", command=self.verifying)
         self.verify_button.grid(row=2, column=0, ipadx=30, ipady=5, padx=7, pady=10, sticky="ew")     
 
-        self.readying = ttk.Button(self.main_frame, text="Ready", style="Toggle.TButton", state="disabled")
+        self.readying = ttk.Button(self.main_frame, text="Ready", style="Toggle.TButton", state="disabled", command=self.getting_ready)
         self.readying.grid(row=3, column=0, ipadx=30, ipady=5, padx=7, pady=10, sticky="ew")    
 
         # ? Networking utilities
@@ -169,8 +170,12 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, line)
             self.list_pos += 1
 
+        self.list_pos += 1
+        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Buyer operation must be ready first!"
+        self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+        self.listbox.yview("end")
+        
         self.is_verified = False
-        self.ready_to_start = False
         self.update()
         # self.running_auc_checks = False
         
@@ -181,6 +186,7 @@ class App(ttk.Frame):
         self.net_message = ""
         self.client_socket = socket()
         
+        self.ready_to_start = False # Flag to see if verify and ready buttons have been successful 
         self.server_connection = False # Is this client connected to the comm server?
         self.computers_connected = False # Variable to keep track of whether or not the computers are linked
         
@@ -243,7 +249,14 @@ class App(ttk.Frame):
                 self.listbox.yview("end")
                 if "Buyer-Computer" in log_now:
                     self.computers_connected = True
-                    print("slut")
+                    if self.server_connection:
+                        self.net_message = " - Seller-Computer already connected!"
+                        msg = self.net_message
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
+                        self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                        self.listbox.yview("end")
+                        self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
             except OSError:  # Possibly client has left the chat.
                 break
     # ! ==================================== 
@@ -254,12 +267,13 @@ class App(ttk.Frame):
         if self.net_start:
             self.net_message = " - [This is a placeholder message.]"
             self.net_start = False
-            msg = "Seller-Computer is connected to server!"
+            msg = " - Seller-Computer is connected to server!"
             self.list_pos += 1
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
             self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
             self.listbox.yview("end")
             self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
+            self.server_connection = True
         else:
             msg = self.net_message # Gets input from this client to send to server
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + msg
@@ -276,7 +290,6 @@ class App(ttk.Frame):
         self.send() # Sends quit message to server to close socket
     # ! ====================================
     # ! ====================================        
-        
     def verifying(self):
         if window_exist:
             forza.activate() # Bring program into focus
@@ -292,8 +305,8 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.auction_car_not_looking = pyautogui.locateOnScreen(Auction_Car_Not, confidence=.8)
-                self.auction_car_hovered_looking = pyautogui.locateOnScreen(Auction_Car_Hovered, confidence=.8)
+                self.auction_car_not_looking = pyautogui.locateOnScreen(Auc_Car_Not, confidence=.8)
+                self.auction_car_hovered_looking = pyautogui.locateOnScreen(Auc_Car_Hovered, confidence=.8)
                 if self.auction_car_not_looking:
                     pyautogui.click(self.auction_car_not_looking)
                     pyautogui.press('enter')
@@ -357,6 +370,8 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
             self.update()   
+            self.net_message = log_now
+            self.send()
             self.readying.config(state="enabled")   
             self.is_verified = True
         else:
@@ -523,6 +538,8 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()
+                self.net_message = log_now
+                self.send()
                 return
                 # ! ===============================================
             # ! Adjusts car pricing to its minimum
@@ -610,6 +627,14 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
             self.update()
+            self.net_message = log_now
+            self.send()
+            if self.ready_to_start and self.computers_connected and self.server_connection:
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Both systems are ready for auction! |>>"
+                self.listbox.insert(self.list_pos, log_now)
+                self.listbox.yview("end")
+                self.update() 
             return
         else:
             self.list_pos += 1
@@ -618,10 +643,70 @@ class App(ttk.Frame):
             self.listbox.yview("end")
             self.start_toggled == False
             self.start_button.configure(text="Start", style="Toggle.TButton")
-        
     
-    
-                     
+    def start_system(self):
+        if window_exist:
+            forza.activate() # Bring program into focus
+            time.sleep(.05)
+            forza.maximize() # Make program full screen
+            time.sleep(.05)
+            if self.ready_to_start and self.computers_connected and self.server_connection:
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< AUCTION ABOUT TO GO LIVE >>>"
+                self.listbox.insert(self.list_pos, log_now)
+                self.listbox.yview("end")
+                self.update() 
+                pyautogui.press('enter')
+                # ! ===================================
+                # ! CHECKING IF AUCTION IS BEING STARTED
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Is the auction starting???"
+                self.listbox.insert(self.list_pos, log_now)    
+                self.update()
+                while True:
+                    self.starting_auction_looking = pyautogui.locateOnScreen(Starting_Auction, confidence=.85)
+                    if self.starting_auction_looking:
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - << AUCTION IS STARTING! >>"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        self.update()
+                        break
+                    self.update()
+                
+                # ! ===================================
+                # ! CHECKING IF AUCTION IS BEING STARTED
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Is the auction starting???"
+                self.listbox.insert(self.list_pos, log_now)    
+                self.update()
+                while True:
+                    self.live_auction_looking = pyautogui.locateOnScreen(Live_Auction, confidence=.85)
+                    if self.live_auction_looking:
+                        self.net_message = "start_buying"
+                        self.send()
+                        self.list_pos += 1
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - << AUCTION IS LIVE!!!!!!! >>"
+                        self.listbox.insert(self.list_pos, log_now)
+                        self.listbox.yview("end")
+                        self.update()
+                        break
+                    self.update()
+                    
+                return
+            else: 
+                self.list_pos += 1
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< Something is not ready for auction to start >>>"
+                self.listbox.insert(self.list_pos, log_now)
+                self.listbox.yview("end")
+                self.update()
+                return
+        else:
+            self.list_pos += 1
+            log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Game isn't open, can't verify!"
+            self.listbox.insert(self.list_pos, log_now) 
+            self.listbox.yview("end")
+            return            
 # ! Program startup
 # ! --------------------------------------
 if __name__ == "__main__":
