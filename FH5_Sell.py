@@ -244,7 +244,7 @@ class App(ttk.Frame):
                 if ("Buyer-Computer" in log_now) and (not self.computers_connected):
                     self.computers_connected = True
                     if self.server_connection:
-                        self.net_message = " - Seller-Computer already connected!"
+                        self.net_message = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Seller-Computer already connected!"
                         msg = self.net_message
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
                 if "seller_access" in log_now:
@@ -282,8 +282,7 @@ class App(ttk.Frame):
     # ! Networking stuff
     # ! ====================================
     def network_testing(self):
-        self.net_message = " --< Seller-Computer ready to sell! >--"
-        print("idot")
+        self.net_message = " --| Seller computer test! |--"
         self.send()
     # ! Closes socket connection as needed
     # ! ==================================== 
@@ -291,7 +290,6 @@ class App(ttk.Frame):
         self.net_message = "{quit}"
         self.net_start = True
         self.send() # Sends quit message to server to close socket
-    # ! ====================================
     # ! ====================================        
     def verifying(self):
         if window_exist:
@@ -375,7 +373,7 @@ class App(ttk.Frame):
             self.listbox.insert(self.list_pos, log_now)
             self.listbox.yview("end")
             self.update()   
-            self.net_message = log_now
+            self.net_message = " - --< Auction access verified! >--"
             self.send()
             self.readying.config(state="enabled")   
             self.is_verified = True
@@ -405,10 +403,10 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.8)
-                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.8)
-                self.min_buy_not_looking = pyautogui.locateOnScreen(Minimum_Buy_Not, confidence=.8)
-                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.8)
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.95)
+                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.95)
+                self.min_buy_not_looking = pyautogui.locateOnScreen(Minimum_Buy_Not, confidence=.95)
+                self.min_buy_hovered_looking = pyautogui.locateOnScreen(Minimum_Buy_Hovered, confidence=.95)
                 
                 if self.initial_price_hovered_looking:
                     self.list_pos += 1
@@ -637,6 +635,7 @@ class App(ttk.Frame):
             self.net_message = log_now
             self.send()
             if self.ready_to_start and self.computers_connected and self.server_connection:
+                self.start_button.config(state="enabled")
                 self.list_pos += 1
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Both systems are ready for auction! |>>"
                 self.listbox.insert(self.list_pos, log_now)

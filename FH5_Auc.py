@@ -202,12 +202,6 @@ class App(ttk.Frame):
         self.listbox.configure(*args, **kwargs)   
     # ? ====================================  
     # ! ====================================  
-    # ! Networking stuff
-    # ! ====================================
-    def network_testing(self):
-        self.net_message = " --< Buyer-Computer ready to buy! >--"
-        self.send()
-    # ! ====================================
     # ! Establishes server connection for communications
     # ! ====================================        
     def start_networking(self):
@@ -249,7 +243,7 @@ class App(ttk.Frame):
                 if ("Seller-Computer" in log_now) and (not self.computers_connected):
                     self.computers_connected = True
                     if self.server_connection:
-                        self.net_message = " - Buyer-Computer already connected!"
+                        self.net_message = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Buyer-Computer already connected!"
                         msg = self.net_message
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
                 
@@ -293,6 +287,12 @@ class App(ttk.Frame):
         self.net_start = True
         self.send() # Sends quit message to server to close socket
     # ! ====================================
+    # ! ====================================
+        # ! Networking stuff
+    # ! ====================================
+    def network_testing(self):
+        self.net_message = " --| Buyer computer test! |--"
+        self.send()
     # ! ====================================
     # ? =======================================================================
     # ? Types Cody's gamertag in before starting auction search to make auction access quicker
@@ -697,7 +697,21 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()
-                # self.start_button.config(state="enabled")
+                self.ready_to_start = True
+                self.net_message = " - seller_access"
+                self.send()
+                if self.ready_to_start and self.computers_connected and self.server_connection:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Buyer system is ready for auction! |>>"
+                    self.listbox.insert(self.list_pos, log_now)
+                    self.listbox.yview("end")
+                    self.update()   
+                else:
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< Something is not ready for auction to start >>>"
+                    self.listbox.insert(self.list_pos, log_now)
+                    self.listbox.yview("end")
+                    self.update()  
                 return
 
             self.list_pos += 1
@@ -881,7 +895,6 @@ class App(ttk.Frame):
                 self.current_time = time.time()
                 self.lapsed = self.current_time - self.start_time
                 self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
-                print(self.temp)
                 if self.temp == 5:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Accessing auction took too long!"
@@ -923,7 +936,6 @@ class App(ttk.Frame):
                 self.current_time = time.time()
                 self.lapsed = self.current_time - self.start_time
                 self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
-                print(self.temp)
                 if self.temp == 5:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Purchase attempt took too long!"
@@ -955,7 +967,6 @@ class App(ttk.Frame):
                 self.current_time = time.time()
                 self.lapsed = self.current_time - self.start_time
                 self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
-                print(self.temp)
                 if self.temp == 5:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Buyout taking took too long!"
@@ -997,7 +1008,6 @@ class App(ttk.Frame):
                 self.current_time = time.time()
                 self.lapsed = self.current_time - self.start_time
                 self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
-                print(self.temp)
                 if self.temp == 5:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Collecting car took too long!"
@@ -1027,7 +1037,6 @@ class App(ttk.Frame):
                 self.current_time = time.time()
                 self.lapsed = self.current_time - self.start_time
                 self.temp = int(time.strftime("%S", time.gmtime(self.lapsed)))
-                print(self.temp)
                 if self.temp == 5:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Claiming car is taking forever!"
