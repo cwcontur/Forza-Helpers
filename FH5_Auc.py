@@ -256,6 +256,15 @@ class App(ttk.Frame):
                         self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
                         self.listbox.yview("end")
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
+                
+                if "start_buying" in log_now:
+                    self.verify_button.config(state="enabled")
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< BEGINNING BUY SEQUENCE >>>"
+                    self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                    self.listbox.yview("end")
+                    self.update()
+                    self.start()
             except OSError:  # Possibly client has left the chat.
                 break
     # ! ==================================== 
@@ -298,6 +307,8 @@ class App(ttk.Frame):
             time.sleep(.05)
             forza.maximize() # Make program full screen
             time.sleep(.05)
+            self.net_message = " - Buyer system is verifying access!"
+            self.send()
             # ! Checks to see if game is on main auction access button
             # ! ==============================================================================
             self.list_pos += 1
@@ -555,6 +566,8 @@ class App(ttk.Frame):
             time.sleep(.05)
             forza.maximize() # Make program full screen
             time.sleep(.05)
+            self.net_message = " - Buyer system is getting ready for auction!"
+            self.send()
             self.correct_starting_point = True
             # ! ===================================
             # ! Checks to make sure program is back on advanced search screen before continuing
@@ -695,12 +708,14 @@ class App(ttk.Frame):
             log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - --< Ready to access auctions! >--"
             self.listbox.insert(self.list_pos, log_now)
             self.ready_to_start = True
+            self.net_message = "seller_access"
+            self.send()
             self.listbox.yview("end")
             self.update()
             
             if self.ready_to_start and self.computers_connected and self.server_connection:
                 self.list_pos += 1
-                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Both systems are ready for auction! |>>"
+                log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<| Buyer system is ready for auction! |>>"
                 self.listbox.insert(self.list_pos, log_now)
                 self.listbox.yview("end")
                 self.update()   

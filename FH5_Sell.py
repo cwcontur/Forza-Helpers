@@ -257,6 +257,12 @@ class App(ttk.Frame):
                         self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
                         self.listbox.yview("end")
                         self.client_socket.send(bytes(msg, "utf8")) # Sends messages through socket
+                if "seller_access" in log_now:
+                    self.verify_button.config(state="enabled")
+                    self.list_pos += 1
+                    log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Buyer system has finished readying!"
+                    self.listbox.insert(self.list_pos, log_now) # Inserts messages into log
+                    self.listbox.yview("end")
             except OSError:  # Possibly client has left the chat.
                 break
     # ! ==================================== 
@@ -296,6 +302,8 @@ class App(ttk.Frame):
             time.sleep(.05)
             forza.maximize() # Make program full screen
             time.sleep(.05)
+            self.net_message = " - Seller system is verifying access!"
+            self.send()
             # ! Checks for initial auction car button to begin auctioning vehicle
             # ! ===============================================
             self.list_pos += 1
@@ -388,6 +396,8 @@ class App(ttk.Frame):
             time.sleep(.05)
             forza.maximize() # Make program full screen
             time.sleep(.05)
+            self.net_message = " - Seller system is getting ready for auction!"
+            self.send()
             # ! Checks for car pricing option and sees if the price is at its lowest or not
             # ! ===============================================
             self.not_at_min = False
@@ -650,6 +660,8 @@ class App(ttk.Frame):
             time.sleep(.05)
             forza.maximize() # Make program full screen
             time.sleep(.05)
+            self.net_message = " - Seller system is ABOUT TO START AUCTION!"
+            self.send()
             if self.ready_to_start and self.computers_connected and self.server_connection:
                 self.list_pos += 1
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< AUCTION ABOUT TO GO LIVE >>>"
@@ -686,7 +698,7 @@ class App(ttk.Frame):
                         self.net_message = "start_buying"
                         self.send()
                         self.list_pos += 1
-                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - << AUCTION IS LIVE!!!!!!! >>"
+                        log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - <<< AUCTION IS LIVE!!!!!!! >>>"
                         self.listbox.insert(self.list_pos, log_now)
                         self.listbox.yview("end")
                         self.update()
