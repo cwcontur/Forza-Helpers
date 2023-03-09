@@ -81,12 +81,12 @@ except:
 class App(ttk.Frame):
     def __init__(self, parent, compound=tk.RIGHT):
         super().__init__(parent, padding=7)
-        
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=0)
         self.rowconfigure(0, weight=1)
         
         self.main_frame = ttk.Frame(self, style="Card.TFrame")
-        self.main_frame.grid(row=0, rowspan=2, column=0, padx=10, pady=10, sticky="news")
+        self.main_frame.grid(row=0, rowspan=2, column=1, padx=10, pady=10, sticky="news")
         self.main_frame.rowconfigure(6, weight=1)
         
         self.start_button = ttk.Button(self.main_frame, text="Start Auction", style="Accent.TButton", state="disabled")
@@ -107,7 +107,7 @@ class App(ttk.Frame):
         # ? Networking utilities
         # ? ==========================================
         self.network_frame = ttk.Frame(self)
-        self.network_frame.grid(row=1, column=1, padx=10, pady=(0,10), sticky="news")
+        self.network_frame.grid(row=1, column=0, padx=10, pady=(0,10), sticky="news")
         
         self.connected_img = ImageTk.PhotoImage(PIL.Image.open(Net_Check).resize((40,40)))
         self.connect_disp = tk.Label(self.network_frame, image=self.connected_img)
@@ -140,7 +140,7 @@ class App(ttk.Frame):
         # Side frame that doesn't contain the main buttons
         # ==================           
         self.secondary_frame = ttk.Frame(self, style="Card.TFrame")
-        self.secondary_frame.grid(row=0, column=1, padx=10, pady=10, sticky="news")
+        self.secondary_frame.grid(row=0, column=0, padx=10, pady=10, sticky="news")
         self.secondary_frame.columnconfigure(0, weight=0)
         self.secondary_frame.columnconfigure(0, weight=1)
         self.secondary_frame.rowconfigure(0, weight=1)
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     app = tk.Tk()
     app.title("FH5 Seller")
     app.geometry(f"{600}x{325}")
-    app.iconbitmap("cookie.ico")
+    app.iconbitmap("seller.ico")
 
     sv_ttk.set_theme("light")
         
