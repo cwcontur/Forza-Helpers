@@ -349,7 +349,7 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.first_screen_look = pyautogui.locateOnScreen(First_Screen, confidence=.6)
+                self.first_screen_look = pyautogui.locateOnScreen(First_Screen, confidence=.6, grayscale=True)
                 if self.first_screen_look:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Auction access found!"
@@ -379,7 +379,7 @@ class App(ttk.Frame):
             # ! ===================================
             self.start_time = time.time()
             while True:
-                self.base_search_look = pyautogui.locateOnScreen(Base_Search, confidence=.6)
+                self.base_search_look = pyautogui.locateOnScreen(Base_Search, confidence=.6, grayscale=True)
                 if self.base_search_look:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Base search screen found!"
@@ -408,8 +408,8 @@ class App(ttk.Frame):
                 # ! ===================================        
                 self.start_time = time.time()
                 while True:
-                    self.adv_search_look = pyautogui.locateOnScreen(Adv_Search, confidence=.6)
-                    self.adv_tag_hovered = pyautogui.locateOnScreen(Adv_Tag_Hovered, confidence=.6)
+                    self.adv_search_look = pyautogui.locateOnScreen(Adv_Search, confidence=.6, grayscale=True)
+                    self.adv_tag_hovered = pyautogui.locateOnScreen(Adv_Tag_Hovered, confidence=.6, grayscale=True)
                     
                     if self.adv_search_look:
                         self.list_pos += 1
@@ -449,8 +449,8 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.tag_typed_look = pyautogui.locateOnScreen(Tag_Typed, confidence=.6)
-                    self.tag_not_look = pyautogui.locateOnScreen(FocusedSpade, confidence=.6)
+                    self.tag_typed_look = pyautogui.locateOnScreen(Tag_Typed, confidence=.6, grayscale=True)
+                    self.tag_not_look = pyautogui.locateOnScreen(FocusedSpade, confidence=.6, grayscale=True)
                     if self.tag_typed_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Gamertag already typed!"
@@ -499,7 +499,7 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.man_key_look = pyautogui.locateOnScreen(Man_Key, confidence=.6)
+                    self.man_key_look = pyautogui.locateOnScreen(Man_Key, confidence=.6, grayscale=True)
                     if self.man_key_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Typing in Cody's gamertag!"
@@ -529,7 +529,7 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6)
+                    self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6, grayscale=True)
                     if self.adv_screen_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On advanced search screen!"
@@ -595,7 +595,7 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6)
+                self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6, grayscale=True)
                 if self.adv_screen_look:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On advanced search screen!"
@@ -627,7 +627,7 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.first_screen_look = pyautogui.locateOnScreen(First_Screen, confidence=.6)
+                    self.first_screen_look = pyautogui.locateOnScreen(First_Screen, confidence=.6, grayscale=True)
                     if self.first_screen_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Auction access found!"
@@ -656,7 +656,7 @@ class App(ttk.Frame):
                 self.listbox.yview("end")
                 self.start_time = time.time()
                 while True:
-                    self.base_search_look = pyautogui.locateOnScreen(Base_Search, confidence=.6)
+                    self.base_search_look = pyautogui.locateOnScreen(Base_Search, confidence=.6, grayscale=True)
                     if self.base_search_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Base search screen found!"
@@ -690,7 +690,7 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6)
+                    self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6, grayscale=True)
                     if self.adv_screen_look:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On advanced search screen!"
@@ -791,7 +791,7 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6)
+                self.adv_screen_look = pyautogui.locateOnScreen(Adv_Search_Screen, confidence=.6, grayscale=True)
                 if self.adv_screen_look:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On advanced search screen!"
@@ -830,8 +830,8 @@ class App(ttk.Frame):
         self.listbox.yview("end")
         self.start_time = time.time()
         while True:
-            self.no_auc_look = pyautogui.locateOnScreen(No_Auc, confidence=.6)
-            self.auc_options_look = pyautogui.locateOnScreen(Auc_Options, confidence=.6)
+            self.no_auc_look = pyautogui.locateOnScreen(No_Auc, confidence=.6, grayscale=True)
+            self.auc_options_look = pyautogui.locateOnScreen(Auc_Options, confidence=.6, grayscale=True)
             if self.no_auc_look:
                 self.list_pos += 1
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - No auctions to display!"
@@ -883,8 +883,8 @@ class App(ttk.Frame):
         self.update()   
         self.start_time = time.time()
         while True:
-            self.auc_buy_look = pyautogui.locateOnScreen(Auc_Buy, confidence=.6)
-            self.auc_buy_hovered_look = pyautogui.locateOnScreen(Auc_Buy_Hovered, confidence=.6)
+            self.auc_buy_look = pyautogui.locateOnScreen(Auc_Buy, confidence=.6, grayscale=True)
+            self.auc_buy_hovered_look = pyautogui.locateOnScreen(Auc_Buy_Hovered, confidence=.6, grayscale=True)
             if self.auc_buy_look:
                 pyautogui.click(self.auc_buy_look)
                 pyautogui.press('enter')
@@ -922,8 +922,8 @@ class App(ttk.Frame):
         self.update() 
         self.start_time = time.time()
         while True:
-            self.buyout_y_look = pyautogui.locateOnScreen(Buyout_Y, confidence=.6)
-            self.buyout_n_look = pyautogui.locateOnScreen(Buyout_N, confidence=.6)
+            self.buyout_y_look = pyautogui.locateOnScreen(Buyout_Y, confidence=.6, grayscale=True)
+            self.buyout_n_look = pyautogui.locateOnScreen(Buyout_N, confidence=.6, grayscale=True)
             if self.buyout_y_look:
                 pyautogui.press('enter')
                 self.list_pos += 1
@@ -961,7 +961,7 @@ class App(ttk.Frame):
         self.update()    
         self.start_time = time.time()
         while True:
-            self.buy_success_look = pyautogui.locateOnScreen(Buy_Success, confidence=.6)
+            self.buy_success_look = pyautogui.locateOnScreen(Buy_Success, confidence=.6, grayscale=True)
             if self.buy_success_look:
                 pyautogui.press('enter')
                 self.list_pos += 1
@@ -990,8 +990,8 @@ class App(ttk.Frame):
         self.update()
         self.start_time = time.time()
         while True:
-            self.collect_yes_look = pyautogui.locateOnScreen(Collect_Yes, confidence=.6)
-            self.collect_no_look = pyautogui.locateOnScreen(Collect_Not, confidence=.6)
+            self.collect_yes_look = pyautogui.locateOnScreen(Collect_Yes, confidence=.6, grayscale=True)
+            self.collect_no_look = pyautogui.locateOnScreen(Collect_Not, confidence=.6, grayscale=True)
             if self.collect_yes_look:
                 pyautogui.press('enter')
                 self.list_pos += 1
@@ -1028,7 +1028,7 @@ class App(ttk.Frame):
         self.update()    
         self.start_time = time.time()
         while True:
-            self.claiming_look = pyautogui.locateOnScreen(Claiming, confidence=.6)        
+            self.claiming_look = pyautogui.locateOnScreen(Claiming, confidence=.6, grayscale=True)        
             if self.claiming_look:
                 self.list_pos += 1
                 log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Congratulations on your new car!"
