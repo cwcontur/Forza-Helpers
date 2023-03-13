@@ -356,8 +356,8 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.auction_car_not_looking = pyautogui.locateOnScreen(Auc_Car_Not, confidence=.8)
-                self.auction_car_hovered_looking = pyautogui.locateOnScreen(Auc_Car_Hovered, confidence=.8)
+                self.auction_car_not_looking = pyautogui.locateOnScreen(Auc_Car_Not, confidence=.6)
+                self.auction_car_hovered_looking = pyautogui.locateOnScreen(Auc_Car_Hovered, confidence=.6)
                 if self.auction_car_not_looking:
                     pyautogui.click(self.auction_car_not_looking)
                     pyautogui.press('enter')
@@ -395,7 +395,7 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.create_auction_looking = pyautogui.locateOnScreen(Create_Auction, confidence=.8)
+                self.create_auction_looking = pyautogui.locateOnScreen(Create_Auction, confidence=.6)
                 if self.create_auction_looking:
                     self.list_pos += 1
                     log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - On creating auction screen!"
@@ -451,8 +451,8 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True: 
-                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.9)
-                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.9)
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.6)
+                self.initial_price_not_looking = pyautogui.locateOnScreen(Initial_Price_Not, confidence=.6)
                 
                 if self.initial_price_hovered_looking:
                     self.list_pos += 1
@@ -495,8 +495,8 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.buyout_price_hovered_looking = pyautogui.locateOnScreen(Buyout_Price_Hovered, confidence=.8)
-                    self.buyout_price_not_looking = pyautogui.locateOnScreen(Buyout_Price_Not, confidence=.8)
+                    self.buyout_price_hovered_looking = pyautogui.locateOnScreen(Buyout_Price_Hovered, confidence=.6)
+                    self.buyout_price_not_looking = pyautogui.locateOnScreen(Buyout_Price_Not, confidence=.6)
                     if self.buyout_price_hovered_looking:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - Car price will now be adjusted!"
@@ -537,8 +537,8 @@ class App(ttk.Frame):
                 self.update()
                 self.start_time = time.time()
                 while True:
-                    self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.8)
-                    self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.8)
+                    self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.6)
+                    self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.6)
                     
                     if self.confirm_hovered_looking:
                         self.list_pos += 1
@@ -587,7 +587,7 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.8)
+                self.initial_price_hovered_looking = pyautogui.locateOnScreen(Initial_Price_Hovered, confidence=.6)
                 if self.initial_price_hovered_looking:
                     pyautogui.press('left')
                     self.list_pos += 1
@@ -617,8 +617,8 @@ class App(ttk.Frame):
             self.update()
             self.start_time = time.time()
             while True:
-                self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.8)
-                self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.8)
+                self.confirm_hovered_looking = pyautogui.locateOnScreen(Confirm_Hovered, confidence=.6)
+                self.confirm_not_looking = pyautogui.locateOnScreen(Confirm_Not, confidence=.6)
                 
                 if self.confirm_hovered_looking:
                     self.list_pos += 1
@@ -694,7 +694,7 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)    
                 self.update()
                 while True:
-                    self.starting_auction_looking = pyautogui.locateOnScreen(Starting_Auction, confidence=.85)
+                    self.starting_auction_looking = pyautogui.locateOnScreen(Starting_Auction, confidence=.6)
                     if self.starting_auction_looking:
                         self.list_pos += 1
                         log_now = str(datetime.utcnow().strftime('%H:%M:%S')) + " - << AUCTION IS STARTING! >>"
@@ -711,7 +711,7 @@ class App(ttk.Frame):
                 self.listbox.insert(self.list_pos, log_now)    
                 self.update()
                 while True:
-                    self.live_auction_looking = pyautogui.locateOnScreen(Live_Auction, confidence=.85)
+                    self.live_auction_looking = pyautogui.locateOnScreen(Live_Auction, confidence=.6)
                     if self.live_auction_looking:
                         self.net_message = "start_buying"
                         self.send()
