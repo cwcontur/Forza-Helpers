@@ -408,8 +408,8 @@ class App(ttk.Frame):
                 # ! ===================================        
                 self.start_time = time.time()
                 while True:
-                    self.adv_search_look = pyautogui.locateOnScreen(Adv_Search, confidence=.6, grayscale=True)
-                    self.adv_tag_hovered = pyautogui.locateOnScreen(Adv_Tag_Hovered, confidence=.6, grayscale=True)
+                    self.adv_search_look = pyautogui.locateOnScreen(Adv_Search, confidence=.6)
+                    self.adv_tag_hovered = pyautogui.locateOnScreen(Adv_Tag_Hovered, confidence=.6)
                     
                     if self.adv_search_look:
                         self.list_pos += 1
